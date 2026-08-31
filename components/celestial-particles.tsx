@@ -10,6 +10,7 @@ const vertexShader = `
   uniform float time;
   uniform float progress;
   uniform float ouSigma;
+  uniform float pointScale;
   uniform vec2 pointer;
   varying float vGlow;
   float easeOut(float x) { return 1.0 - pow(1.0 - x, 3.0); }
@@ -30,19 +31,23 @@ const vertexShader = `
     pos.y += pointer.y * (0.04 + seed * 0.025) * p;
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
-    gl_PointSize = (2.2 + seed * 2.4) * (8.0 / max(1.0, -mvPosition.z));
-    vGlow = 0.42 + seed * 0.58;
+    gl_PointSize = (2.9 + seed * 3.2) * pointScale * (8.2 / max(1.0, -mvPosition.z));
+    vGlow = 0.52 + seed * 0.48;
   }
 `;
 
 const fragmentShader = `
+  uniform float intensity;
   varying float vGlow;
   void main() {
     vec2 uv = gl_PointCoord - vec2(0.5);
-    float alpha = smoothstep(0.5, 0.03, length(uv)) * vGlow;
-    vec3 cold = vec3(0.43, 0.58, 0.91);
-    vec3 glory = vec3(0.96, 0.86, 0.66);
-    gl_FragColor = vec4(mix(cold, glory, vGlow * 0.75), alpha * 0.82);
+    float distanceFromCore = length(uv);
+    float aura = smoothstep(0.5, 0.06, distanceFromCore);
+    float core = smoothstep(0.16, 0.0, distanceFromCore);
+    float alpha = (aura * 0.46 + core * 0.72) * vGlow * intensity;
+    vec3 cold = vec3(0.46, 0.61, 0.94);
+    vec3 glory = vec3(1.0, 0.88, 0.58);
+    gl_FragColor = vec4(mix(cold, glory, 0.48 + vGlow * 0.48), alpha);
   }
 `;
 
@@ -70,27 +75,38 @@ function buildSwarm(count: number) {
     let y = 0;
     let z = 0;
 
-    if (slot < 0.68) {
+    if (slot < 0.58) {
       const side = i % 2 === 0 ? -1 : 1;
-      const t = r2;
-      const feather = Math.floor(r3 * 8) / 8;
-      x = side * (0.48 + t * 3.15 + feather * 0.28);
-      y = 0.65 + Math.sin(t * Math.PI) * 1.48 - t * 1.15 - feather * 0.48;
-      z = (r1 - 0.5) * 0.5 + Math.sin(t * 5) * 0.12;
-    } else if (slot < 0.80) {
+      const sweep = Math.pow(r2, 0.78);
+      const feather = Math.floor(r3 * 10) / 10;
+      x = side * (0.44 + sweep * 3.38 + feather * 0.2);
+      y = 0.78 + Math.sin(sweep * Math.PI) * 1.72 - sweep * 1.18 - feather * 0.54;
+      z = (r1 - 0.5) * 0.58 + Math.sin(sweep * 5) * 0.13;
+    } else if (slot < 0.68) {
       const angle = r1 * Math.PI * 2;
-      const radius = 0.52 + r2 * 0.12;
+      const radius = 0.56 + r2 * 0.14;
       x = Math.cos(angle) * radius;
-      y = 2.05 + Math.sin(angle) * radius * 0.35;
+      y = 2.17 + Math.sin(angle) * radius * 0.34;
       z = (r3 - 0.5) * 0.12;
-    } else if (slot < 0.93) {
-      x = (r1 - 0.5) * (0.26 + r2 * 0.35);
-      y = 1.58 - r2 * 2.8;
-      z = (r3 - 0.5) * 0.3;
+    } else if (slot < 0.74) {
+      const angle = r1 * Math.PI * 2;
+      const radius = Math.sqrt(r2) * 0.2;
+      x = Math.cos(angle) * radius;
+      y = 1.44 + Math.sin(angle) * radius;
+      z = (r3 - 0.5) * 0.16;
+    } else if (slot < 0.91) {
+      const angle = r1 * Math.PI * 2;
+      const t = r2;
+      const robe = 0.08 + Math.pow(t, 1.55) * 0.4;
+      x = Math.cos(angle) * robe;
+      y = 1.25 - t * 2.82;
+      z = Math.sin(angle) * robe * 0.45;
     } else {
-      x = (r1 - 0.5) * 8.5;
-      y = (r2 - 0.5) * 5.7;
-      z = -0.8 + r3 * 1.4;
+      const angle = r1 * Math.PI * 2;
+      const radius = 1.1 + Math.pow(r2, 0.72) * 3.4;
+      x = Math.cos(angle) * radius;
+      y = 0.35 + Math.sin(angle) * radius * 0.72;
+      z = -1.1 + r3 * 1.25;
     }
 
     target[i * 3] = x;
@@ -113,7 +129,7 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
     const host = hostRef.current;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const mobile = window.matchMedia('(max-width: 720px)').matches;
-    const count = mobile ? 5800 : 18000;
+    const count = mobile ? 7600 : 24000;
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: !mobile });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.25 : 1.7));
     renderer.setSize(host.clientWidth, host.clientHeight);
@@ -132,15 +148,34 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
       time: { value: 0 },
       progress: { value: reduced ? 1 : 0 },
       ouSigma: { value: 0.184 },
+      pointScale: { value: 1 },
+      intensity: { value: 1 },
       pointer: { value: new THREE.Vector2(0, 0) }
+    };
+    const haloUniforms = {
+      time: uniforms.time,
+      progress: uniforms.progress,
+      ouSigma: uniforms.ouSigma,
+      pointer: uniforms.pointer,
+      pointScale: { value: 2.55 },
+      intensity: { value: 0.16 }
     };
     const material = new THREE.ShaderMaterial({
       vertexShader, fragmentShader, uniforms, transparent: true,
       depthWrite: false, blending: THREE.AdditiveBlending
     });
+    const haloMaterial = new THREE.ShaderMaterial({
+      vertexShader, fragmentShader, uniforms: haloUniforms, transparent: true,
+      depthWrite: false, blending: THREE.AdditiveBlending
+    });
     const points = new THREE.Points(geometry, material);
-    scene.add(points);
-    const entrance = reduced ? null : gsap.to(uniforms.progress, { value: 1, duration: 4.8 / speedRef.current, ease: 'power4.out', delay: 0.2 });
+    const haloPoints = new THREE.Points(geometry, haloMaterial);
+    const angel = new THREE.Group();
+    angel.add(haloPoints, points);
+    angel.scale.setScalar(reduced ? 1.08 : 0.82);
+    scene.add(angel);
+    const entrance = reduced ? null : gsap.to(uniforms.progress, { value: 1, duration: 5.6 / speedRef.current, ease: 'power4.out', delay: 0.15 });
+    const scaleEntrance = reduced ? null : gsap.to(angel.scale, { x: 1.08, y: 1.08, z: 1.08, duration: 5.8, ease: 'power3.out', delay: 0.15 });
     const onPointerMove = (event: PointerEvent) => {
       if (reduced) return;
       gsap.to(uniforms.pointer.value, {
@@ -155,8 +190,10 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
       const elapsed = reduced ? 0.8 : clock.getElapsedTime();
       uniforms.time.value = elapsed * speedRef.current;
       uniforms.ouSigma.value = 0.184 * gloryRef.current;
-      points.rotation.y = reduced ? 0 : Math.sin(uniforms.time.value * 0.13) * 0.08;
-      material.opacity = Math.min(1, 0.62 + gloryRef.current * 0.28);
+      uniforms.intensity.value = Math.min(1.32, 0.78 + gloryRef.current * 0.34);
+      haloUniforms.intensity.value = Math.min(0.3, 0.11 + gloryRef.current * 0.08);
+      angel.rotation.y = reduced ? 0 : Math.sin(uniforms.time.value * 0.12) * 0.065;
+      angel.position.y = reduced ? 0 : Math.sin(uniforms.time.value * 0.16) * 0.035;
       renderer.render(scene, camera);
       if (!reduced) raf = requestAnimationFrame(render);
     };
@@ -171,11 +208,13 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     return () => {
       entrance?.kill();
+      scaleEntrance?.kill();
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointermove', onPointerMove);
       geometry.dispose();
       material.dispose();
+      haloMaterial.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };

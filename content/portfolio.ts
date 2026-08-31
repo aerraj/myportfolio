@@ -85,5 +85,6 @@ export const proof = [
   { value: '869', label: 'LeetCode solved', href: 'https://leetcode.com/u/aerraj/' },
   { value: '1551', label: 'Codeforces Specialist', href: 'https://codeforces.com/profile/aerraj' },
   { value: '38', label: 'CodeChef global rank', href: 'https://www.codechef.com/users/ae_rraj' },
-  { value: 'R2', label: 'Meta Hacker Cup 2024', href: 'https://www.facebook.com/codingcompetitions/hacker-cup' }
+  { value: 'R2', label: 'Meta Hacker Cup 2024', href: 'https://www.facebook.com/codingcompetitions/hacker-cup/2024/certificate/1718845482222514' },
+  { value: 'ICPC', label: 'Asia Kanpur Honorable', href: '/icpc-asia-kanpur-achievement.pdf' }
 ];
