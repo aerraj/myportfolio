@@ -6,9 +6,10 @@ import { metadata as meta } from './config';
 
 const archivo = Archivo({ subsets: ['latin'], variable: '--font-display' });
 const newsreader = Newsreader({ subsets: ['latin'], variable: '--font-serif', adjustFontFallback: false });
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : meta.site.url);
 
 export const metadata: Metadata = {
-  metadataBase: new URL(meta.site.url),
+  metadataBase: new URL(siteUrl),
   title: {
     default: meta.site.title,
     template: `%s | ${meta.site.title}`
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
   keywords: meta.site.keywords,
   creator: meta.author.username,
   openGraph: {
-    url: meta.site.url,
+    url: siteUrl,
     type: 'website',
     title: meta.site.title,
     siteName: meta.site.title,
