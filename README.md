@@ -1,25 +1,21 @@
-# Portfolio Website
+# myportfolio
 
-This project is my personal portfolio website, built to showcase my skills and projects. It leverages modern web technologies like Next.js, shadcn/ui, Tailwind CSS, and Framer Motion
+Rishabh Raj's research-led portfolio: machine learning, markets, and the systems between.
 
-## 🚀 Tech Stack
+The experience is built as a single editorial narrative with a live WebGL particle field. The hero uses a GPU-side spectral approximation of an Ornstein-Uhlenbeck ensemble to form a descending halo and wings. Framer Motion handles the opening narrative, GSAP choreographs scroll, and anime.js drives fine-grained section bursts.
 
--Next.js
--Shadcn/ui
--Framer Motion
--Tailwind CSS
+## Run locally
 
-## ✨ Features
+```bash
+npm install
+npm run dev
+```
 
-- ⚡️ Next.js 14 with App Router
-- 📝 MDX for content
-- 🎨 Tailwind CSS for styling
-- 🌈 Shadcn UI for accessible UI components
-- 🛡 Strict TypeScript and ESLint configuration
-- 📱 Responsive design
-- 🌗 Light / Dark mode
-- 📈 SEO optimized with meta tags
-- 🎨 Animations using Framer Motion
-- 🏠 LightHouse score near 100
-- 🔨 Husky & Lint Staged to lint and format code before committing
-- 💄 Prettier for code formatting
+## Production
+
+```bash
+npm run build
+npm run start
+```
+
+Content lives in `content/portfolio.ts`. The full product brief is preserved in `PRD.md`.

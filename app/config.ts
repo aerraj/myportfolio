@@ -1,20 +1,20 @@
-import { Metadata } from '@/types/metadata';
-
-const metadata: Metadata = {
+const metadata = {
   author: {
     name: 'Rishabh Raj',
     username: 'aerraj',
-    label: 'Engineer & Developer'
+    label: 'Quantitative Developer & Research Engineer'
   },
   site: {
-    title: "Rishabh's Portfolio",
-    description: 'Portfolio of web & UI developer Rishabh Raj.',
-    ogImage: '/images/og.png',
-    url: 'https://www.example.com',
+    title: 'Rishabh Raj — Machine Learning, Markets & Systems',
+    description: 'Rishabh Raj turns research ideas into instruments across machine learning, quantitative finance, hardware, and production systems.',
+    ogImage: '/og.png',
+    url: 'https://rrajportfolio-aerrajs-projects.vercel.app',
     keywords: [
-      'web design',
-      'web development',
-      'portfolio'
+      'quantitative research',
+      'machine learning research',
+      'financial engineering',
+      'research engineer',
+      'Rishabh Raj'
     ],
     language: 'en',
     charset: 'UTF-8'

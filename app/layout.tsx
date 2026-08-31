@@ -1,13 +1,11 @@
 import type { Metadata } from 'next';
-import { Instrument_Sans } from 'next/font/google';
+import { Archivo, Newsreader } from 'next/font/google';
 import '@/styles/globals.css';
-
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
 
 import { metadata as meta } from './config';
 
-const inter = Instrument_Sans({ subsets: ['latin'] });
+const archivo = Archivo({ subsets: ['latin'], variable: '--font-display' });
+const newsreader = Newsreader({ subsets: ['latin'], variable: '--font-serif', adjustFontFallback: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL(meta.site.url),
@@ -37,7 +35,7 @@ export const metadata: Metadata = {
     // creatorId: 'id',
     images: [
       {
-        url: '/images/og.png',
+        url: '/og.png',
         width: 1200,
         height: 630,
         alt: meta.site.description
@@ -97,16 +95,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
+      <body className={`${archivo.className} ${archivo.variable} ${newsreader.variable}`}>
+        {children}
       </body>
     </html>
   );
