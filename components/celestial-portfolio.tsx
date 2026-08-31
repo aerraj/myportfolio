@@ -8,6 +8,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { animate, stagger } from 'animejs';
 import { capabilities, featuredProjects, proof, secondaryProjects, timeline } from '@/content/portfolio';
+import QuantTelemetry from './quant-telemetry';
 
 const CelestialParticles = dynamic(() => import('./celestial-particles'), { ssr: false });
 
@@ -63,6 +64,7 @@ export default function CelestialPortfolio() {
       <main id="main">
         <section className="hero" id="top" aria-labelledby="hero-title">
           <div className="glory" aria-hidden="true" style={{ opacity: Math.min(1, gloryIntensity) }} /><CelestialParticles descentSpeed={descentSpeed} gloryIntensity={gloryIntensity} /><div className="hero-stars" aria-hidden="true" />
+          <QuantTelemetry />
           <div className="hero-copy">
             <motion.p custom={0.35} initial="hidden" animate="visible" variants={reveal} className="hero-kicker">Rishabh Raj <span>/</span> Engineer reaching for research</motion.p>
             <motion.h1 custom={0.5} initial="hidden" animate="visible" variants={reveal} id="hero-title">Machine learning, markets,<br />and the systems between.</motion.h1>
@@ -125,7 +127,7 @@ export default function CelestialPortfolio() {
               <div className="about-statement"><p>I am drawn to problems where the signal is faint, the system is consequential, and the answer has to work outside a notebook.</p><p>My route is deliberately non-linear: electrical engineering, competitive programming, production operations, quantitative development, and financial engineering. The destination is AI research or quantitative research with real technical depth.</p><a href="/resume.pdf" target="_blank">Download résumé <Download size={16} /></a></div>
               <ol className="timeline">{timeline.map((item) => <li key={`${item.date}-${item.role}`}><time>{item.date}</time><div><h3>{item.role}</h3><span>{item.place}</span><p>{item.copy}</p></div></li>)}</ol>
             </div>
-            <div className="proof-strip">{proof.map((item) => <div key={item.label}><strong className="proof-value">{item.value}</strong><span>{item.label}</span></div>)}</div>
+            <div className="proof-strip">{proof.map((item) => <a href={item.href} target="_blank" rel="noreferrer" aria-label={`Open ${item.label} profile`} key={item.label}><strong className="proof-value">{item.value}</strong><span>{item.label}</span><ArrowUpRight aria-hidden="true" /></a>)}</div>
           </div>
         </section>
 

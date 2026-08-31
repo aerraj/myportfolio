@@ -29,7 +29,7 @@ export const featuredProjects: FeaturedProject[] = [
     summary: 'A research pipeline for turning market structure into reviewable decisions.',
     detail: 'At NorthRock Capital, I built resilient ingestion across 250+ instruments, a local-LLM research workflow, and a constrained, monthly-rebalanced QMI portfolio model for a $1M initial allocation.',
     stack: ['Python', 'Portfolio Optimization', 'LLM', 'Cloud Data'],
-    href: '/resume.pdf',
+    href: 'https://drive.google.com/file/d/18TMykR5_hVBtPlYLGkcQ5kfXPdPvp8VW/view?usp=sharing',
     cta: 'Read the documented work',
     signal: '$450M+ AUM · 250+ instruments'
   },
@@ -82,8 +82,8 @@ export const timeline = [
 ];
 
 export const proof = [
-  { value: '869', label: 'LeetCode solved' },
-  { value: '1551', label: 'Codeforces Specialist' },
-  { value: '38', label: 'CodeChef global rank' },
-  { value: 'R2', label: 'Meta Hacker Cup 2024' }
+  { value: '869', label: 'LeetCode solved', href: 'https://leetcode.com/u/aerraj/' },
+  { value: '1551', label: 'Codeforces Specialist', href: 'https://codeforces.com/profile/aerraj' },
+  { value: '38', label: 'CodeChef global rank', href: 'https://www.codechef.com/users/ae_rraj' },
+  { value: 'R2', label: 'Meta Hacker Cup 2024', href: 'https://www.facebook.com/codingcompetitions/hacker-cup' }
 ];
