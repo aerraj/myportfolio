@@ -16,6 +16,16 @@ function SectionHead({ number, title, note }: { number: string; title: string; n
   return <header className="section-head"><span>{number}</span><h2>{title}</h2><p>{note}</p></header>;
 }
 
+function CelestialInterlude({ index, label }: { index: string; label: string }) {
+  return (
+    <div className="celestial-interlude" aria-hidden="true">
+      <div className="interlude-beam" />
+      <div className="interlude-orbit"><span>✦</span></div>
+      <code>{index} · {label}</code>
+    </div>
+  );
+}
+
 export default function CelestialPortfolio() {
   const reduced = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -30,12 +40,39 @@ export default function CelestialPortfolio() {
     if (!rootRef.current || reduced) return;
     gsap.registerPlugin(ScrollTrigger);
     const context = gsap.context(() => {
+      gsap.utils.toArray<HTMLElement>('.section-head').forEach((head) => {
+        const pieces = head.querySelectorAll(':scope > *');
+        gsap.fromTo(pieces,
+          { y: 54, opacity: 0, filter: 'blur(8px)' },
+          { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.15, stagger: 0.11, ease: 'power3.out', scrollTrigger: { trigger: head, start: 'top 82%' } }
+        );
+      });
       gsap.utils.toArray<HTMLElement>('.project-row').forEach((row) => {
-        gsap.fromTo(row, { y: -72, opacity: 0 }, { y: 0, opacity: 1, duration: 1.05, ease: 'power3.out', scrollTrigger: { trigger: row, start: 'top 84%' } });
+        const pieces = row.querySelectorAll('.project-index,.project-main > *,.project-side > *');
+        const timeline = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 83%' } });
+        timeline
+          .fromTo(row, { y: 88, opacity: 0 }, { y: 0, opacity: 1, duration: 1.15, ease: 'power3.out' })
+          .fromTo(pieces, { y: 34, opacity: 0 }, { y: 0, opacity: 1, duration: .82, stagger: .065, ease: 'power2.out' }, '-=.78');
+        const index = row.querySelector('.project-index span');
+        if (index) gsap.to(index, { y: 34, ease: 'none', scrollTrigger: { trigger: row, start: 'top bottom', end: 'bottom top', scrub: 1.2 } });
       });
       gsap.utils.toArray<HTMLElement>('.descent-section').forEach((section) => {
-        gsap.fromTo(section.querySelector('.light-shaft'), { opacity: 0, scaleY: .35 }, { opacity: 1, scaleY: 1, ease: 'none', scrollTrigger: { trigger: section, start: 'top bottom', end: 'center center', scrub: 1 } });
+        const shaft = section.querySelector('.light-shaft');
+        if (shaft) gsap.fromTo(shaft, { opacity: 0, scaleY: .22 }, { opacity: .82, scaleY: 1, ease: 'none', scrollTrigger: { trigger: section, start: 'top bottom', end: 'center 38%', scrub: 1.2 } });
+        gsap.fromTo(section, { '--dust-shift': '-36px' }, { '--dust-shift': '110px', ease: 'none', scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 1.4 } });
       });
+      gsap.utils.toArray<HTMLElement>('.celestial-interlude').forEach((interlude) => {
+        const interludeTimeline = gsap.timeline({ scrollTrigger: { trigger: interlude, start: 'top 88%', end: 'bottom 34%', scrub: 1 } });
+        interludeTimeline
+          .fromTo(interlude.querySelector('.interlude-beam'), { scaleY: 0, opacity: 0 }, { scaleY: 1, opacity: 1, ease: 'power2.out' }, 0)
+          .fromTo(interlude.querySelector('.interlude-orbit'), { scale: .45, rotate: -24, opacity: 0 }, { scale: 1, rotate: 0, opacity: 1, ease: 'power3.out' }, .08)
+          .fromTo(interlude.querySelector('code'), { y: 18, opacity: 0 }, { y: 0, opacity: 1, ease: 'power2.out' }, .32);
+      });
+      gsap.fromTo('.building-grid .build-card', { y: 72, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: .12, ease: 'power3.out', scrollTrigger: { trigger: '.building-grid', start: 'top 82%' } });
+      gsap.fromTo('.method-note', { y: 64, opacity: 0 }, { y: 0, opacity: 1, duration: 1.15, ease: 'power3.out', scrollTrigger: { trigger: '.method-note', start: 'top 84%' } });
+      gsap.fromTo('.about-statement', { y: 72, opacity: 0 }, { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', scrollTrigger: { trigger: '.about-layout', start: 'top 80%' } });
+      gsap.fromTo('.timeline li', { x: 58, opacity: 0 }, { x: 0, opacity: 1, duration: .9, stagger: .13, ease: 'power3.out', scrollTrigger: { trigger: '.timeline', start: 'top 82%' } });
+      gsap.fromTo('.contact-line,.email-link,.contact-links,footer', { y: 52, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: .12, ease: 'power3.out', scrollTrigger: { trigger: '.contact-line', start: 'top 84%' } });
     }, rootRef);
 
     const observer = new IntersectionObserver((entries) => {
@@ -98,6 +135,8 @@ export default function CelestialPortfolio() {
           </div>
         </section>
 
+        <CelestialInterlude index="I" label="Signal becomes method" />
+
         <section className="descent-section capability-section" id="research">
           <div className="light-shaft" aria-hidden="true" />
           <div className="section-inner">
@@ -109,6 +148,8 @@ export default function CelestialPortfolio() {
           </div>
         </section>
 
+        <CelestialInterlude index="II" label="Method becomes system" />
+
         <section className="descent-section building-section" id="building">
           <div className="light-shaft" aria-hidden="true" />
           <div className="section-inner">
@@ -118,6 +159,8 @@ export default function CelestialPortfolio() {
             </div>
           </div>
         </section>
+
+        <CelestialInterlude index="III" label="Systems become trajectory" />
 
         <section className="descent-section about-section" id="about">
           <div className="light-shaft" aria-hidden="true" />
@@ -130,6 +173,8 @@ export default function CelestialPortfolio() {
             <div className="proof-strip">{proof.map((item) => <a href={item.href} target="_blank" rel="noreferrer" aria-label={`Open ${item.label} profile`} key={item.label}><strong className="proof-value">{item.value}</strong><span>{item.label}</span><ArrowUpRight aria-hidden="true" /></a>)}</div>
           </div>
         </section>
+
+        <CelestialInterlude index="IV" label="Trajectory returns to light" />
 
         <section className="contact-section" id="contact">
           <div className="contact-stars" aria-hidden="true" />
