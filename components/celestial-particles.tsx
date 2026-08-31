@@ -186,7 +186,9 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
     };
     const clock = new THREE.Clock();
     let raf = 0;
+    let visible = true;
     const render = () => {
+      if (!visible) return;
       const elapsed = reduced ? 0.8 : clock.getElapsedTime();
       uniforms.time.value = elapsed * speedRef.current;
       uniforms.ouSigma.value = 0.184 * gloryRef.current;
@@ -198,6 +200,16 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
       if (!reduced) raf = requestAnimationFrame(render);
     };
     render();
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (!visible) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      } else if (!reduced && !raf) {
+        render();
+      }
+    }, { threshold: 0.01 });
+    visibilityObserver.observe(host);
     const onResize = () => {
       if (!host.clientWidth || !host.clientHeight) return;
       camera.aspect = host.clientWidth / host.clientHeight;
@@ -210,6 +222,7 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
       entrance?.kill();
       scaleEntrance?.kill();
       cancelAnimationFrame(raf);
+      visibilityObserver.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointermove', onPointerMove);
       geometry.dispose();
