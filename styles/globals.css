@@ -313,7 +313,7 @@ footer { display:flex; justify-content:space-between; gap:1rem; margin-top:7rem;
 .trajectory-route { position:relative; margin:0; padding:0 0 2rem 4.3rem; list-style:none; }
 .route-line { position:absolute; left:12px; top:6px; bottom:0; width:2px; background:linear-gradient(180deg,#6385cf 0 19%,#c9a557 20% 41%,#9ba4b4 42% 64%,#a98045 65% 84%,rgba(255,240,201,.7) 85% 100%); box-shadow:0 0 16px rgba(110,143,234,.18); }
 .route-item { position:relative; min-height:245px; margin-bottom:2rem; padding:2.1rem 2.3rem; border:1px solid rgba(135,146,168,.15); }
-.route-item::before,.achievement-stamps::before,.route-future::before { content:''; position:absolute; left:-4.7rem; top:2.35rem; width:10px; height:10px; border:2px solid var(--void); border-radius:50%; background:var(--gold); box-shadow:0 0 14px rgba(239,178,87,.42); }
+.route-item::before,.route-future::before { content:''; position:absolute; left:-4.7rem; top:2.35rem; width:10px; height:10px; border:2px solid var(--void); border-radius:50%; background:var(--gold); box-shadow:0 0 14px rgba(239,178,87,.42); }
 .route-item time { display:block; margin-bottom:2.8rem; color:var(--gold); font:500 .6rem/1 monospace; letter-spacing:.1em; text-transform:uppercase; }
 .route-item h3 { margin:0 0 .45rem; font-size:clamp(1.7rem,2.4vw,2.8rem); font-weight:500; letter-spacing:-.035em; }
 .route-item span { color:#8793a7; font:500 .62rem/1.2 monospace; text-transform:uppercase; letter-spacing:.08em; }
@@ -322,18 +322,28 @@ footer { display:flex; justify-content:space-between; gap:1rem; margin-top:7rem;
 .route-market { background:radial-gradient(ellipse at 85% 22%,rgba(239,178,87,.055),transparent 42%); }
 .route-research { background:linear-gradient(145deg,rgba(233,228,214,.035),transparent 65%); }
 .route-industrial { background:repeating-linear-gradient(135deg,rgba(233,228,214,.025) 0 1px,transparent 1px 28px); }
-.achievement-stamps { position:relative; margin:3.5rem 0 4.5rem; }
-.achievement-stamps::before { top:.15rem; background:#6e8fea; }
-.achievement-stamps>span { display:block; margin-bottom:1.3rem; color:#748198; font:500 .57rem/1 monospace; letter-spacing:.12em; text-transform:uppercase; }
-.achievement-stamps>div { display:flex; flex-wrap:wrap; gap:.7rem 1.5rem; }
-.achievement-stamps a { position:relative; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:.65rem; padding:.65rem 0; border-bottom:1px solid rgba(135,146,168,.22); }
-.achievement-stamps strong { color:var(--glory); font:400 1.2rem/1 var(--font-serif),Georgia,serif; }
-.achievement-stamps small { max-width:105px; color:#7e8a9f; font:500 .49rem/1.2 monospace; text-transform:uppercase; letter-spacing:.07em; }
-.achievement-stamps svg { width:12px; color:var(--gold); }
 .route-future { position:relative; padding:2.4rem 0; }
 .route-future::before { top:2.65rem; background:var(--glory); }
 .route-future span { display:block; margin-bottom:.6rem; color:var(--gold); font:500 .57rem/1 monospace; letter-spacing:.14em; }
 .route-future strong { color:#d8dbe1; font:400 clamp(1.3rem,2vw,2.2rem)/1.2 var(--font-serif),Georgia,serif; }
+
+.achievement-section { position:relative; overflow:hidden; border-top:1px solid rgba(135,146,168,.14); border-bottom:1px solid rgba(135,146,168,.14); background:linear-gradient(180deg,#09111e,#070b14); }
+.achievement-section::before { content:''; position:absolute; inset:0; opacity:.3; background:linear-gradient(90deg,rgba(110,143,234,.045) 1px,transparent 1px); background-size:20% 100%; pointer-events:none; }
+.achievement-inner { position:relative; width:min(1660px,calc(100% - clamp(5rem,16vw,18rem))); margin:0 auto; padding:clamp(5rem,8vw,8rem) 0; }
+.achievement-heading { display:grid; grid-template-columns:170px 1fr auto; gap:2rem; align-items:end; margin-bottom:2.6rem; }
+.achievement-heading>span { color:var(--gold); font:500 .58rem/1 monospace; letter-spacing:.13em; text-transform:uppercase; }
+.achievement-heading h2 { margin:0; font-size:clamp(2rem,3.6vw,4.5rem); line-height:.95; letter-spacing:-.045em; font-weight:500; }
+.achievement-heading p { max-width:300px; margin:0; color:#8d99ad; font:400 1rem/1.5 var(--font-serif),Georgia,serif; }
+.achievement-scroll { overflow-x:auto; overflow-y:hidden; scrollbar-width:thin; scrollbar-color:rgba(239,178,87,.36) transparent; }
+.achievement-scroll:focus-visible { outline:1px solid var(--gold); outline-offset:6px; }
+.achievement-band { display:grid; grid-template-columns:repeat(5,minmax(210px,1fr)); min-width:1080px; border-top:1px solid rgba(135,146,168,.25); border-bottom:1px solid rgba(135,146,168,.25); }
+.achievement-band a { position:relative; min-height:150px; display:grid; grid-template-columns:auto 1fr; grid-template-rows:1fr auto; gap:.8rem 1rem; align-items:center; padding:1.7rem; border-right:1px solid rgba(135,146,168,.22); transition:background .28s ease; }
+.achievement-band a:last-child { border-right:0; }
+.achievement-band a:hover { background:linear-gradient(145deg,rgba(239,178,87,.07),transparent 68%); }
+.achievement-band strong { align-self:end; color:var(--glory); font:400 clamp(1.8rem,2.6vw,3.2rem)/1 var(--font-serif),Georgia,serif; }
+.achievement-band span { align-self:end; color:#8793a8; font:500 .57rem/1.25 monospace; letter-spacing:.08em; text-transform:uppercase; }
+.achievement-band svg { grid-column:2; justify-self:end; width:14px; color:var(--gold); transition:transform .28s ease; }
+.achievement-band a:hover svg { transform:translate(3px,-3px); }
 
 .contact-section { background:radial-gradient(ellipse at 50% 0%,rgba(255,240,201,.1),transparent 48%),#05080e; }
 .contact-signal { position:absolute; inset:0; z-index:-1; overflow:hidden; }
@@ -394,8 +404,10 @@ footer { display:flex; justify-content:space-between; gap:1rem; margin-top:7rem;
   .trajectory-route { padding-left:2.8rem; }
   .route-line { left:7px; }
   .route-item { min-height:auto; padding:1.6rem; }
-  .route-item::before,.achievement-stamps::before,.route-future::before { left:-3.05rem; }
-  .achievement-stamps>div { display:grid; grid-template-columns:1fr 1fr; }
+  .route-item::before,.route-future::before { left:-3.05rem; }
+  .achievement-inner { width:calc(100% - 2.8rem); }
+  .achievement-heading { grid-template-columns:1fr; gap:.8rem; }
+  .achievement-heading p { max-width:none; }
   .contact-signal i { top:63%; }
   .contact-signal span { top:calc(63% - 4px); }
 }

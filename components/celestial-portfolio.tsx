@@ -95,7 +95,8 @@ export default function CelestialPortfolio() {
       gsap.fromTo('.method-note', { y: 64, opacity: 0 }, { y: 0, opacity: 1, duration: 1.15, ease: 'power3.out', scrollTrigger: { trigger: '.method-note', start: 'top 84%' } });
       gsap.fromTo('.about-statement', { y: 58, opacity: .2 }, { y: 0, opacity: 1, duration: 1.05, ease: 'power3.out', scrollTrigger: { trigger: '.trajectory-layout', start: 'top 80%' } });
       gsap.fromTo('.route-line', { scaleY: 0 }, { scaleY: 1, transformOrigin: 'top', ease: 'none', scrollTrigger: { trigger: '.trajectory-route', start: 'top 78%', end: 'bottom 62%', scrub: 1 } });
-      gsap.fromTo('.route-item,.achievement-stamps', { x: 42, opacity: .2 }, { x: 0, opacity: 1, duration: .8, stagger: .11, ease: 'power3.out', scrollTrigger: { trigger: '.trajectory-route', start: 'top 78%' } });
+      gsap.fromTo('.route-item,.route-future', { x: 42, opacity: .2 }, { x: 0, opacity: 1, duration: .8, stagger: .11, ease: 'power3.out', scrollTrigger: { trigger: '.trajectory-route', start: 'top 78%' } });
+      gsap.fromTo('.achievement-band a', { x: 34, opacity: .18 }, { x: 0, opacity: 1, duration: .72, stagger: .08, ease: 'power3.out', scrollTrigger: { trigger: '.achievement-section', start: 'top 82%' } });
       gsap.fromTo('.contact-line,.email-link,.contact-links,footer', { y: 52, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: .12, ease: 'power3.out', scrollTrigger: { trigger: '.contact-line', start: 'top 84%' } });
     }, rootRef);
 
@@ -193,10 +194,20 @@ export default function CelestialPortfolio() {
                 <span className="route-line" aria-hidden="true" />
                 <ol className="trajectory-route">
                   <li className={`route-item route-${trajectoryMaterial(trajectory[0].role)}`}><time>{trajectory[0].date}</time><div><h3>{trajectory[0].role}</h3><span>{trajectory[0].place}</span><p>{trajectory[0].copy}</p></div></li>
-                  <li className="achievement-stamps"><span>Competition evidence</span><div>{proof.map((item) => <a href={item.href} target="_blank" rel="noreferrer" key={item.label}><strong>{item.value}</strong><small>{item.label}</small><ArrowUpRight aria-hidden="true" /></a>)}</div></li>
                   {trajectory.slice(1).map((item) => <li className={`route-item route-${trajectoryMaterial(item.role)}`} key={`${item.date}-${item.role}`}><time>{item.date}</time><div><h3>{item.role}</h3><span>{item.place}</span><p>{item.copy}</p></div></li>)}
                   <li className="route-future"><span>OPEN</span><strong>AI research · Quantitative research</strong></li>
                 </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="achievement-section" aria-labelledby="achievement-title">
+          <div className="achievement-inner">
+            <header className="achievement-heading"><span>Evidence ledger</span><h2 id="achievement-title">Competition evidence</h2><p>Five independent records. Each opens its source.</p></header>
+            <div className="achievement-scroll" tabIndex={0} aria-label="Competition achievements; scroll horizontally on smaller screens">
+              <div className="achievement-band">
+                {proof.map((item) => <a href={item.href} target="_blank" rel="noreferrer" key={item.label}><strong>{item.value}</strong><span>{item.label}</span><ArrowUpRight aria-hidden="true" /></a>)}
               </div>
             </div>
           </div>
