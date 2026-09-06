@@ -41,15 +41,6 @@ export default function CelestialPortfolio() {
     gsap.registerPlugin(ScrollTrigger);
     const motionMedia = gsap.matchMedia();
     const context = gsap.context(() => {
-      // Let the descending angel slip into the persistent galaxy as the reader scrolls.
-      gsap.to('.angel-stage', {
-        yPercent: -24, xPercent: 5, scale: 0.94, opacity: 0, ease: 'none',
-        scrollTrigger: { trigger: '.hero', start: 'top top', end: '70% top', scrub: 1.25 }
-      });
-      gsap.to('.glory', {
-        autoAlpha: 0, ease: 'none',
-        scrollTrigger: { trigger: '.hero', start: 'top top', end: '65% top', scrub: 1.25 }
-      });
       gsap.utils.toArray<HTMLElement>('.section-head').forEach((head) => {
         const pieces = head.querySelectorAll(':scope > *');
         gsap.fromTo(pieces,
@@ -116,6 +107,7 @@ export default function CelestialPortfolio() {
   return (
     <div className="portfolio-shell" ref={rootRef}>
       <GalaxyField />
+      <div className="angel-stage" aria-hidden="true"><CelestialParticles descentSpeed={descentSpeed} gloryIntensity={gloryIntensity} /></div>
       <a className="skip-link" href="#main">Skip to content</a>
       <header className="site-header">
         <a className="wordmark" href="#top" aria-label="Rishabh Raj, home">RR<span>∴</span></a>
@@ -125,7 +117,7 @@ export default function CelestialPortfolio() {
 
       <main id="main">
         <section className="hero" id="top" aria-labelledby="hero-title">
-          <div className="glory" aria-hidden="true" style={{ opacity: Math.min(1, gloryIntensity) }} /><div className="angel-stage" aria-hidden="true"><CelestialParticles descentSpeed={descentSpeed} gloryIntensity={gloryIntensity} /></div>
+          <div className="glory" aria-hidden="true" style={{ opacity: Math.min(1, gloryIntensity) }} />
           <QuantTelemetry />
           <div className="hero-copy">
             <motion.p custom={0.15} initial="hidden" animate="visible" variants={reveal} className="hero-kicker">Rishabh Raj <span>/</span> Engineer reaching for research</motion.p>

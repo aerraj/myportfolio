@@ -14,6 +14,11 @@ const vertexShader = `
   uniform float ouSigma;
   uniform float pointScale;
   uniform vec2 pointer;
+  uniform float pointerStrength;
+  uniform float aspect;
+  uniform float scatter;
+  uniform float contentEdge;
+  uniform vec4 wakes[8];
   varying float vGlow;
   float easeOut(float x) { return 1.0 - pow(1.0 - x, 3.0); }
   void main() {
@@ -29,9 +34,37 @@ const vertexShader = `
     float breath = sin(time * 0.42 + seed * 18.0) * 0.025 * p;
     pos.x += breath * (0.5 + abs(target.x));
     pos.y += sin(time * 0.3 + seed * 11.0) * 0.018 * p;
-    pos.x += pointer.x * (0.06 + seed * 0.04) * p;
-    pos.y += pointer.y * (0.04 + seed * 0.025) * p;
+
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+    // The rising content boundary releases each particle into the surrounding sky.
+    vec4 projected = projectionMatrix * mvPosition;
+    float screenY = projected.y / projected.w;
+    float swept = smoothstep(screenY - 0.24, screenY + 0.35, contentEdge);
+    float release = scatter * (0.25 + swept * 0.75);
+    float angle = seed * 239.0;
+    vec2 dispersed = vec2(sin(angle) * aspect, cos(seed * 173.0)) * (1.0 + seed * 2.6);
+    // Push away from the central reading column, leaving readable space for text.
+    dispersed.x += (dispersed.x < 0.0 ? -1.0 : 1.0) * 1.15;
+    mvPosition.xy = mix(mvPosition.xy, dispersed, release);
+    mvPosition.z -= release * (0.4 + seed * 1.4);
+    projected = projectionMatrix * mvPosition;
+    vec2 screen = projected.xy / projected.w;
+    vec2 displacement = vec2(0.0);
+    for (int i = 0; i < 8; i++) {
+      vec2 offset = (screen - wakes[i].xy) * vec2(aspect, 1.0);
+      float distanceToWake = length(offset);
+      float age = wakes[i].z;
+      float radius = 0.17 + age * 0.13;
+      float envelope = (1.0 - smoothstep(0.0, radius, distanceToWake)) * exp(-age * 2.8) * wakes[i].w;
+      vec2 direction = offset / max(distanceToWake, 0.015);
+      vec2 tangent = vec2(-direction.y, direction.x);
+      displacement += (direction + tangent * sin(seed * 43.0 + age * 3.0) * 0.65) * envelope * 0.18;
+    }
+    vec2 offset = (screen - pointer) * vec2(aspect, 1.0);
+    float distanceToPointer = length(offset);
+    displacement += offset / max(distanceToPointer, 0.015)
+      * (1.0 - smoothstep(0.0, 0.19, distanceToPointer)) * pointerStrength * 0.22;
+    mvPosition.xy += displacement * (1.0 + seed * 0.65) * p;
     gl_Position = projectionMatrix * mvPosition;
     gl_PointSize = (2.9 + seed * 3.2) * pointScale * (8.2 / max(1.0, -mvPosition.z));
     vGlow = 0.52 + seed * 0.48;
@@ -160,13 +193,23 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
       ouSigma: { value: 0.184 },
       pointScale: { value: 1 },
       intensity: { value: 1 },
-      pointer: { value: new THREE.Vector2(0, 0) }
+      pointer: { value: new THREE.Vector2(-10, -10) },
+      pointerStrength: { value: 0 },
+      aspect: { value: camera.aspect },
+      scatter: { value: 0 },
+      contentEdge: { value: -2 },
+      wakes: { value: Array.from({ length: 8 }, () => new THREE.Vector4(-10, -10, 10, 0)) }
     };
     const haloUniforms = {
       time: uniforms.time,
       progress: uniforms.progress,
       ouSigma: uniforms.ouSigma,
       pointer: uniforms.pointer,
+      pointerStrength: uniforms.pointerStrength,
+      aspect: uniforms.aspect,
+      scatter: uniforms.scatter,
+      contentEdge: uniforms.contentEdge,
+      wakes: uniforms.wakes,
       pointScale: { value: 2.55 },
       intensity: { value: 0.16 }
     };
@@ -189,21 +232,48 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
     scene.add(angel);
     const entrance = reduced ? null : gsap.to(uniforms.progress, { value: 1, duration: 5.6 / speedRef.current, ease: 'power4.out', delay: 0.15 });
     const scaleEntrance = reduced ? null : gsap.to(angel.scale, { x: 1.08, y: 1.08, z: 1.08, duration: 5.8, ease: 'power3.out', delay: 0.15 });
-    const targetPointer = new THREE.Vector2();
+    let pointerActive = false;
+    let pointerMoved = false;
+    let wakeIndex = 0;
+    let sinceWake = 0;
+    const targetPointer = new THREE.Vector2(-10, -10);
     const onPointerMove = (event: PointerEvent) => {
       if (reduced || event.pointerType !== 'mouse') return;
-      targetPointer.set(
-        (event.clientX / window.innerWidth - 0.5) * 2,
-        -(event.clientY / window.innerHeight - 0.5) * 2
-      );
+      const rect = host.getBoundingClientRect();
+      pointerActive = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
+      targetPointer.set((event.clientX - rect.left) / rect.width * 2 - 1, 1 - (event.clientY - rect.top) / rect.height * 2);
+      pointerMoved = true;
     };
+    const leave = () => { pointerActive = false; pointerMoved = false; };
+    const copy = document.querySelector('.hero-copy');
+    let edge = -2;
+    let scrollTarget = 0;
+    const measureScroll = () => {
+      const rect = host.getBoundingClientRect();
+      const top = copy?.getBoundingClientRect().top ?? window.innerHeight;
+      edge = 1 - (top - rect.top) / Math.max(rect.height, 1) * 2;
+      scrollTarget = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.85)));
+    };
+    measureScroll();
     const loop = ambientLoop(host, (_elapsed, delta) => {
-      uniforms.pointer.value.lerp(targetPointer, 1 - Math.exp(-delta * 3));
+      const easing = 1 - Math.exp(-delta * 5);
+      uniforms.pointer.value.lerp(targetPointer, 1 - Math.exp(-delta * 24));
+      uniforms.pointerStrength.value += ((pointerActive ? 1 : 0) - uniforms.pointerStrength.value) * easing;
+      uniforms.scatter.value += ((reduced ? 0 : scrollTarget) - uniforms.scatter.value) * easing;
+      uniforms.contentEdge.value += (edge - uniforms.contentEdge.value) * easing;
+      sinceWake += delta;
+      for (const wake of uniforms.wakes.value) wake.z += delta;
+      if (pointerActive && pointerMoved && sinceWake > 0.035) {
+        uniforms.wakes.value[wakeIndex].set(targetPointer.x, targetPointer.y, 0, 1);
+        wakeIndex = (wakeIndex + 1) % 8;
+        sinceWake = 0;
+        pointerMoved = false;
+      }
       // Integrate speed so moving the slider cannot jump the animation's phase.
       uniforms.time.value += delta * speedRef.current;
       uniforms.ouSigma.value = 0.184 * gloryRef.current;
-      uniforms.intensity.value = Math.min(1.32, 0.78 + gloryRef.current * 0.34);
-      haloUniforms.intensity.value = Math.min(0.3, 0.11 + gloryRef.current * 0.08);
+      uniforms.intensity.value = Math.min(1.32, 0.78 + gloryRef.current * 0.34) * (1 - uniforms.scatter.value * 0.65);
+      haloUniforms.intensity.value = Math.min(0.3, 0.11 + gloryRef.current * 0.08) * (1 - uniforms.scatter.value * 0.8);
       angel.rotation.y = reduced ? 0 : Math.sin(uniforms.time.value * 0.12) * 0.065;
       angel.position.y = reduced ? 0 : Math.sin(uniforms.time.value * 0.16) * 0.035;
       renderer.render(scene, camera);
@@ -213,12 +283,17 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
       if (!host.clientWidth || !host.clientHeight) return;
       camera.aspect = host.clientWidth / host.clientHeight;
       camera.updateProjectionMatrix();
+      uniforms.aspect.value = camera.aspect;
+      measureScroll();
       renderer.setSize(host.clientWidth, host.clientHeight);
       loop.invalidate();
     };
     const resizeObserver = new ResizeObserver(onResize);
     resizeObserver.observe(host);
     window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('scroll', measureScroll, { passive: true });
+    window.addEventListener('blur', leave);
+    document.documentElement.addEventListener('pointerleave', leave);
     return () => {
       entrance?.kill();
       scaleEntrance?.kill();
@@ -226,6 +301,9 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
       invalidateRef.current = null;
       resizeObserver.disconnect();
       window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('scroll', measureScroll);
+      window.removeEventListener('blur', leave);
+      document.documentElement.removeEventListener('pointerleave', leave);
       geometry.dispose();
       material.dispose();
       haloMaterial.dispose();

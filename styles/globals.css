@@ -442,3 +442,10 @@ section[id] { scroll-margin-top:90px; }
   .hero h1 { font-size:clamp(2.7rem,11.5vw,5.1rem); }
   .quant-telemetry { opacity:.2; }
 }
+
+/* Particles stay in the sky; scrolling disperses their positions in the shader. */
+.galaxy-field { z-index:-2; }
+.angel-stage { position:fixed; inset:0 0 auto; height:84svh; z-index:-1; }
+@media (max-width:760px) {
+  .angel-stage { inset:0 -46% auto; height:64svh; }
+}
