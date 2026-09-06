@@ -20,7 +20,7 @@ a { color:inherit; text-decoration:none; }
 .header-status { justify-self:end; font:500 .72rem/1 monospace; letter-spacing:.08em; color:var(--muted); }
 .header-status span { display:inline-block; width:5px; height:5px; margin-right:.55rem; border-radius:50%; background:#9bcba5; box-shadow:0 0 12px #9bcba5; }
 .hero { position:relative; min-height:132svh; display:flex; align-items:flex-end; overflow:hidden; padding:8.2rem clamp(1.2rem,5vw,5.5rem) clamp(3.5rem,7vh,6rem); isolation:isolate; }
-.celestial-canvas { position:absolute; inset:1% -3% 36%; z-index:-2; opacity:1; filter:drop-shadow(0 0 12px rgba(255,240,201,.24)) drop-shadow(0 0 42px rgba(239,178,87,.14)); }
+.celestial-canvas { position:absolute; inset:1% -3% 36%; z-index:-2; opacity:1; pointer-events:none; }
 .celestial-canvas canvas { width:100%; height:100%; display:block; }
 .glory { position:absolute; z-index:-3; left:50%; top:-18%; width:min(1540px,110vw); height:86%; transform:translateX(-50%); background:radial-gradient(ellipse at 50% 6%,rgba(255,248,222,.53),rgba(239,178,87,.2) 24%,rgba(110,143,234,.1) 44%,transparent 70%),conic-gradient(from 169deg at 50% 0%,transparent 0 38%,rgba(255,240,201,.11) 43%,transparent 48% 52%,rgba(255,240,201,.09) 57%,transparent 62%); filter:blur(10px); }
 .hero::after { content:''; position:absolute; z-index:-1; inset:0; background:linear-gradient(180deg,rgba(7,11,20,.02) 0 48%,rgba(7,11,20,.2) 62%,rgba(7,11,20,.82) 78%,var(--void) 100%),radial-gradient(circle at 50% 32%,transparent 0,rgba(7,11,20,.08) 54%,rgba(7,11,20,.7) 100%); pointer-events:none; }
@@ -84,7 +84,7 @@ a { color:inherit; text-decoration:none; }
 .project-side a:hover,.about-statement a:hover { color:var(--glory); gap:.9rem; }
 
 .capability-section::before { background:linear-gradient(180deg,#0b1220,var(--void) 70%); }
-.capability { position:relative; min-height:430px; padding:2rem clamp(1.5rem,3vw,3.5rem) 2.5rem; border-right:1px solid rgba(135,146,168,.22); overflow:hidden; opacity:0; }
+.capability { position:relative; min-height:430px; padding:2rem clamp(1.5rem,3vw,3.5rem) 2.5rem; border-right:1px solid rgba(135,146,168,.22); overflow:hidden; opacity:1; }
 .capability:last-child { border-right:0; }
 .capability>span { font:500 .62rem/1 monospace; color:var(--gold); }
 .cap-theorem { margin:4.8rem 0 1rem!important; font:400 .68rem/1 monospace!important; text-transform:uppercase; letter-spacing:.12em; color:#78859d!important; }
@@ -249,7 +249,7 @@ footer { display:flex; justify-content:space-between; gap:1rem; margin-top:7rem;
 
 .capability-stage { position:relative; height:235svh; margin-top:6rem; }
 .capability-track { position:sticky; top:14svh; display:flex; width:max-content; gap:1.25rem; }
-.capability { width:min(64vw,790px); min-height:min(70svh,690px); flex:none; display:grid; grid-template-columns:1fr; grid-template-rows:auto auto auto 1fr auto; padding:clamp(2rem,4vw,4rem); border:1px solid rgba(135,146,168,.2); background:rgba(6,11,20,.84); box-shadow:0 34px 90px rgba(0,0,0,.22); opacity:0; }
+.capability { width:min(64vw,790px); min-height:min(70svh,690px); flex:none; display:grid; grid-template-columns:1fr; grid-template-rows:auto auto auto 1fr auto; padding:clamp(2rem,4vw,4rem); border:1px solid rgba(135,146,168,.2); background:rgba(6,11,20,.84); box-shadow:0 34px 90px rgba(0,0,0,.22); opacity:1; }
 .capability:last-child { border-right:1px solid rgba(135,146,168,.2); }
 .capability:nth-child(2) { background:linear-gradient(145deg,rgba(9,17,30,.96),rgba(6,11,20,.9)); }
 .capability:nth-child(3) { background:linear-gradient(145deg,rgba(17,17,19,.96),rgba(6,11,20,.9)); }
@@ -416,4 +416,29 @@ footer { display:flex; justify-content:space-between; gap:1rem; margin-top:7rem;
   .capability { opacity:1!important; }
   .raw-wave,.efficient-frontier,.constraint-line,.blueprint-wave,.blueprint-line,.hero-signal-path,.graph-artifact path { stroke-dashoffset:0!important; }
   .wavelet-stack i,.blueprint-columns i,.decision-tree i { transform:none!important; opacity:1!important; }
+}
+
+/* A single sky connects the angel's entrance to the final contact section. */
+.portfolio-shell { position:relative; isolation:isolate; background:transparent; }
+.galaxy-field { position:fixed; inset:0; width:100%; height:100svh; z-index:-1; pointer-events:none; contain:strict; }
+.hero { min-height:118svh; }
+.angel-stage { position:absolute; inset:0 -3% 29%; z-index:-2; pointer-events:none; transform-origin:50% 35%; }
+.angel-stage .celestial-canvas { inset:0; height:100%; }
+.glory { opacity:.65; background:radial-gradient(ellipse at 50% 12%,rgba(255,239,200,.23),rgba(160,186,241,.08) 38%,transparent 70%); }
+.hero::after { background:linear-gradient(180deg,transparent 35%,rgba(7,11,20,.12) 58%,rgba(7,11,20,.65) 86%,rgba(7,11,20,.22)); }
+.descent-section { border-top-color:rgba(135,146,168,.07); }
+.descent-section::before { background:linear-gradient(180deg,rgba(10,17,29,.35),rgba(7,11,20,.12) 45%,rgba(7,11,20,.22)); }
+.light-shaft { opacity:.18; }
+.signal-blueprint,.achievement-section { background:rgba(7,11,20,.25); }
+.contact-section { background:radial-gradient(ellipse at 50% 70%,rgba(110,143,234,.06),transparent 65%); }
+section[id] { scroll-margin-top:90px; }
+.hero-kicker,.hero-readout,.swarm-controls,.scroll-cue { font-size:.75rem; }
+.swarm-controls label { grid-template-columns:70px 140px; min-height:32px; }
+.swarm-controls input { width:140px; }
+@media (max-width:760px) {
+  .hero { min-height:112svh; padding-top:55svh; }
+  .angel-stage { inset:0 -46% auto; height:64svh; }
+  .hero-copy { padding-top:2rem; }
+  .hero h1 { font-size:clamp(2.7rem,11.5vw,5.1rem); }
+  .quant-telemetry { opacity:.2; }
 }

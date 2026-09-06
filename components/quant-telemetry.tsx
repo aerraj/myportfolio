@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { ambientLoop } from '@/lib/ambient-loop';
 
 export default function QuantTelemetry() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -10,11 +11,8 @@ export default function QuantTelemetry() {
     if (!canvas) return;
     const context = canvas.getContext('2d');
     if (!context) return;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let width = 0;
     let height = 0;
-    let frame = 0;
-    let last = 0;
 
     const resize = () => {
       const box = canvas.getBoundingClientRect();
@@ -26,13 +24,7 @@ export default function QuantTelemetry() {
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     };
 
-    const draw = (timestamp = 0) => {
-      if (!reduced && timestamp - last < 32) {
-        frame = requestAnimationFrame(draw);
-        return;
-      }
-      last = timestamp;
-      const time = reduced ? 2.4 : timestamp / 1000;
+    const draw = (time: number) => {
       context.clearRect(0, 0, width, height);
 
       const gold = 'rgba(239, 178, 87, 0.58)';
@@ -84,15 +76,16 @@ export default function QuantTelemetry() {
         context.fill();
       }
 
-      if (!reduced) frame = requestAnimationFrame(draw);
+
     };
 
     resize();
-    draw();
-    window.addEventListener('resize', resize);
+    const loop = ambientLoop(canvas, draw);
+    const observer = new ResizeObserver(() => { resize(); loop.invalidate(); });
+    observer.observe(canvas);
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', resize);
+      loop.dispose();
+      observer.disconnect();
     };
   }, []);
 

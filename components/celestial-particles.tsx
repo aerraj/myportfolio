@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { useReducedMotion } from 'framer-motion';
+import { ambientLoop } from '@/lib/ambient-loop';
 import * as THREE from 'three';
 
 const vertexShader = `
@@ -42,8 +44,8 @@ const fragmentShader = `
   void main() {
     vec2 uv = gl_PointCoord - vec2(0.5);
     float distanceFromCore = length(uv);
-    float aura = smoothstep(0.5, 0.06, distanceFromCore);
-    float core = smoothstep(0.16, 0.0, distanceFromCore);
+    float aura = (1.0 - smoothstep(0.06, 0.5, distanceFromCore));
+    float core = (1.0 - smoothstep(0.0, 0.16, distanceFromCore));
     float alpha = (aura * 0.46 + core * 0.72) * vGlow * intensity;
     vec3 cold = vec3(0.46, 0.61, 0.94);
     vec3 glory = vec3(1.0, 0.88, 0.58);
@@ -117,20 +119,28 @@ function buildSwarm(count: number) {
 }
 
 export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 1 }: { descentSpeed?: number; gloryIntensity?: number }) {
+  const reducedMotion = useReducedMotion();
+  const invalidateRef = useRef<(() => void) | null>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const speedRef = useRef(descentSpeed);
   const gloryRef = useRef(gloryIntensity);
 
   useEffect(() => { speedRef.current = descentSpeed; }, [descentSpeed]);
-  useEffect(() => { gloryRef.current = gloryIntensity; }, [gloryIntensity]);
+  useEffect(() => { gloryRef.current = gloryIntensity; invalidateRef.current?.(); }, [gloryIntensity]);
 
   useEffect(() => {
     if (!hostRef.current) return;
     const host = hostRef.current;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const mobile = window.matchMedia('(max-width: 720px)').matches;
-    const count = mobile ? 7600 : 24000;
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: !mobile });
+    const count = mobile ? 4200 : 12000;
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'low-power' });
+    } catch {
+      // The independent 2D galaxy remains visible when WebGL is unavailable.
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.25 : 1.7));
     renderer.setSize(host.clientWidth, host.clientHeight);
     renderer.setClearColor(0x000000, 0);
@@ -170,60 +180,51 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
     });
     const points = new THREE.Points(geometry, material);
     const haloPoints = new THREE.Points(geometry, haloMaterial);
+    // Shader targets extend beyond the CPU-side entrance bounding sphere.
+    points.frustumCulled = false;
+    haloPoints.frustumCulled = false;
     const angel = new THREE.Group();
     angel.add(haloPoints, points);
     angel.scale.setScalar(reduced ? 1.08 : 0.82);
     scene.add(angel);
     const entrance = reduced ? null : gsap.to(uniforms.progress, { value: 1, duration: 5.6 / speedRef.current, ease: 'power4.out', delay: 0.15 });
     const scaleEntrance = reduced ? null : gsap.to(angel.scale, { x: 1.08, y: 1.08, z: 1.08, duration: 5.8, ease: 'power3.out', delay: 0.15 });
+    const targetPointer = new THREE.Vector2();
     const onPointerMove = (event: PointerEvent) => {
-      if (reduced) return;
-      gsap.to(uniforms.pointer.value, {
-        x: (event.clientX / window.innerWidth - 0.5) * 2,
-        y: -(event.clientY / window.innerHeight - 0.5) * 2,
-        duration: 1.5, ease: 'power2.out', overwrite: true
-      });
+      if (reduced || event.pointerType !== 'mouse') return;
+      targetPointer.set(
+        (event.clientX / window.innerWidth - 0.5) * 2,
+        -(event.clientY / window.innerHeight - 0.5) * 2
+      );
     };
-    const clock = new THREE.Clock();
-    let raf = 0;
-    let visible = true;
-    const render = () => {
-      if (!visible) return;
-      const elapsed = reduced ? 0.8 : clock.getElapsedTime();
-      uniforms.time.value = elapsed * speedRef.current;
+    const loop = ambientLoop(host, (_elapsed, delta) => {
+      uniforms.pointer.value.lerp(targetPointer, 1 - Math.exp(-delta * 3));
+      // Integrate speed so moving the slider cannot jump the animation's phase.
+      uniforms.time.value += delta * speedRef.current;
       uniforms.ouSigma.value = 0.184 * gloryRef.current;
       uniforms.intensity.value = Math.min(1.32, 0.78 + gloryRef.current * 0.34);
       haloUniforms.intensity.value = Math.min(0.3, 0.11 + gloryRef.current * 0.08);
       angel.rotation.y = reduced ? 0 : Math.sin(uniforms.time.value * 0.12) * 0.065;
       angel.position.y = reduced ? 0 : Math.sin(uniforms.time.value * 0.16) * 0.035;
       renderer.render(scene, camera);
-      if (!reduced) raf = requestAnimationFrame(render);
-    };
-    render();
-    const visibilityObserver = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      if (!visible) {
-        cancelAnimationFrame(raf);
-        raf = 0;
-      } else if (!reduced && !raf) {
-        render();
-      }
-    }, { threshold: 0.01 });
-    visibilityObserver.observe(host);
+    });
+    invalidateRef.current = loop.invalidate;
     const onResize = () => {
       if (!host.clientWidth || !host.clientHeight) return;
       camera.aspect = host.clientWidth / host.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(host.clientWidth, host.clientHeight);
+      loop.invalidate();
     };
-    window.addEventListener('resize', onResize);
+    const resizeObserver = new ResizeObserver(onResize);
+    resizeObserver.observe(host);
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     return () => {
       entrance?.kill();
       scaleEntrance?.kill();
-      cancelAnimationFrame(raf);
-      visibilityObserver.disconnect();
-      window.removeEventListener('resize', onResize);
+      loop.dispose();
+      invalidateRef.current = null;
+      resizeObserver.disconnect();
       window.removeEventListener('pointermove', onPointerMove);
       geometry.dispose();
       material.dispose();
@@ -231,7 +232,7 @@ export default function CelestialParticles({ descentSpeed = 1, gloryIntensity = 
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, []);
+  }, [reducedMotion]);
 
   return <div ref={hostRef} className="celestial-canvas" aria-hidden="true" />;
 }

@@ -6,9 +6,9 @@ import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { ArrowDown, ArrowUpRight, Download, Github, Linkedin, Mail } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { animate, stagger } from 'animejs';
 import { capabilities, featuredProjects, proof, secondaryProjects, timeline } from '@/content/portfolio';
 import QuantTelemetry from './quant-telemetry';
+import GalaxyField from './galaxy-field';
 import { BuildArtifact, CapabilityArtifact, ProjectEvidence, SignalBlueprintTransition } from './evidence-scenes';
 
 const CelestialParticles = dynamic(() => import('./celestial-particles'), { ssr: false });
@@ -32,7 +32,7 @@ export default function CelestialPortfolio() {
   const [descentSpeed, setDescentSpeed] = useState(1);
   const [gloryIntensity, setGloryIntensity] = useState(1);
   const reveal: Variants = {
-    hidden: { opacity: 1, y: reduced ? 0 : -26 },
+    hidden: { opacity: 1, y: reduced ? 0 : 18 },
     visible: (delay: number) => ({ opacity: 1, y: 0, transition: { duration: reduced ? 0 : 1.1, delay, ease: [0.16, 1, 0.3, 1] as const } })
   };
 
@@ -41,18 +41,27 @@ export default function CelestialPortfolio() {
     gsap.registerPlugin(ScrollTrigger);
     const motionMedia = gsap.matchMedia();
     const context = gsap.context(() => {
+      // Let the descending angel slip into the persistent galaxy as the reader scrolls.
+      gsap.to('.angel-stage', {
+        yPercent: -24, xPercent: 5, scale: 0.94, opacity: 0, ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: '70% top', scrub: 1.25 }
+      });
+      gsap.to('.glory', {
+        autoAlpha: 0, ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: '65% top', scrub: 1.25 }
+      });
       gsap.utils.toArray<HTMLElement>('.section-head').forEach((head) => {
         const pieces = head.querySelectorAll(':scope > *');
         gsap.fromTo(pieces,
-          { y: 42, opacity: .22, filter: 'blur(6px)' },
-          { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.15, stagger: 0.11, ease: 'power3.out', scrollTrigger: { trigger: head, start: 'top 82%' } }
+          { y: 24, opacity: .3 },
+          { y: 0, opacity: 1, duration: 1.15, stagger: 0.11, ease: 'power3.out', scrollTrigger: { trigger: head, start: 'top 82%' } }
         );
       });
       gsap.utils.toArray<HTMLElement>('.project-row').forEach((row) => {
         const pieces = row.querySelectorAll('.project-index,.project-main > *,.project-side > *,.project-evidence');
         const timeline = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 83%' } });
         timeline
-          .fromTo(row, { y: 72, opacity: .18 }, { y: 0, opacity: 1, duration: 1.05, ease: 'power3.out' })
+          .fromTo(row, { y: 32, opacity: .18 }, { y: 0, opacity: 1, duration: 1.05, ease: 'power3.out' })
           .fromTo(pieces, { y: 28, opacity: .25 }, { y: 0, opacity: 1, duration: .72, stagger: .055, ease: 'power2.out' }, '-=.7');
         const index = row.querySelector('.project-index span');
         if (index) gsap.to(index, { y: 22, ease: 'none', scrollTrigger: { trigger: row, start: 'top bottom', end: 'bottom top', scrub: 1.2 } });
@@ -91,31 +100,22 @@ export default function CelestialPortfolio() {
         if (!stage || !track) return;
         gsap.to(track, { x: () => Math.min(0, stage.clientWidth - track.scrollWidth), ease: 'none', scrollTrigger: { trigger: stage, start: 'top 14%', end: 'bottom 86%', scrub: 1.1, invalidateOnRefresh: true } });
       });
-      gsap.fromTo('.building-grid .build-card', { y: 72, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: .12, ease: 'power3.out', scrollTrigger: { trigger: '.building-grid', start: 'top 82%' } });
-      gsap.fromTo('.method-note', { y: 64, opacity: 0 }, { y: 0, opacity: 1, duration: 1.15, ease: 'power3.out', scrollTrigger: { trigger: '.method-note', start: 'top 84%' } });
-      gsap.fromTo('.about-statement', { y: 58, opacity: .2 }, { y: 0, opacity: 1, duration: 1.05, ease: 'power3.out', scrollTrigger: { trigger: '.trajectory-layout', start: 'top 80%' } });
+      gsap.fromTo('.capability', { y: 24, opacity: .3 }, { y: 0, opacity: 1, duration: .85, stagger: .12, ease: 'power3.out', scrollTrigger: { trigger: '.capability-track', start: 'top 88%' } });
+      gsap.fromTo('.building-grid .build-card', { y: 32, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: .12, ease: 'power3.out', scrollTrigger: { trigger: '.building-grid', start: 'top 82%' } });
+      gsap.fromTo('.method-note', { y: 28, opacity: 0 }, { y: 0, opacity: 1, duration: 1.15, ease: 'power3.out', scrollTrigger: { trigger: '.method-note', start: 'top 84%' } });
+      gsap.fromTo('.about-statement', { y: 28, opacity: .2 }, { y: 0, opacity: 1, duration: 1.05, ease: 'power3.out', scrollTrigger: { trigger: '.trajectory-layout', start: 'top 80%' } });
       gsap.fromTo('.route-line', { scaleY: 0 }, { scaleY: 1, transformOrigin: 'top', ease: 'none', scrollTrigger: { trigger: '.trajectory-route', start: 'top 78%', end: 'bottom 62%', scrub: 1 } });
       gsap.fromTo('.route-item,.route-future', { x: 42, opacity: .2 }, { x: 0, opacity: 1, duration: .8, stagger: .11, ease: 'power3.out', scrollTrigger: { trigger: '.trajectory-route', start: 'top 78%' } });
       gsap.fromTo('.achievement-band a', { x: 34, opacity: .18 }, { x: 0, opacity: 1, duration: .72, stagger: .08, ease: 'power3.out', scrollTrigger: { trigger: '.achievement-section', start: 'top 82%' } });
-      gsap.fromTo('.contact-line,.email-link,.contact-links,footer', { y: 52, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: .12, ease: 'power3.out', scrollTrigger: { trigger: '.contact-line', start: 'top 84%' } });
+      gsap.fromTo('.contact-line,.email-link,.contact-links,footer', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: .12, ease: 'power3.out', scrollTrigger: { trigger: '.contact-line', start: 'top 84%' } });
     }, rootRef);
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const targets = entry.target.classList.contains('capability-track')
-          ? entry.target.querySelectorAll('.capability')
-          : entry.target.querySelectorAll('.proof-value');
-        animate(targets, { opacity: [0, 1], translateY: [-28, 0], delay: stagger(110), duration: 850, ease: 'outExpo' });
-        observer.unobserve(entry.target);
-      });
-    }, { threshold: .2 });
-    rootRef.current.querySelectorAll('.capability-track').forEach((node) => observer.observe(node));
-    return () => { observer.disconnect(); motionMedia.revert(); context.revert(); };
+    return () => { motionMedia.revert(); context.revert(); };
   }, [reduced]);
 
   return (
     <div className="portfolio-shell" ref={rootRef}>
+      <GalaxyField />
       <a className="skip-link" href="#main">Skip to content</a>
       <header className="site-header">
         <a className="wordmark" href="#top" aria-label="Rishabh Raj, home">RR<span>∴</span></a>
@@ -125,12 +125,12 @@ export default function CelestialPortfolio() {
 
       <main id="main">
         <section className="hero" id="top" aria-labelledby="hero-title">
-          <div className="glory" aria-hidden="true" style={{ opacity: Math.min(1, gloryIntensity) }} /><CelestialParticles descentSpeed={descentSpeed} gloryIntensity={gloryIntensity} /><div className="hero-stars" aria-hidden="true" />
+          <div className="glory" aria-hidden="true" style={{ opacity: Math.min(1, gloryIntensity) }} /><div className="angel-stage" aria-hidden="true"><CelestialParticles descentSpeed={descentSpeed} gloryIntensity={gloryIntensity} /></div>
           <QuantTelemetry />
           <div className="hero-copy">
-            <motion.p custom={0.9} initial="hidden" animate="visible" variants={reveal} className="hero-kicker">Rishabh Raj <span>/</span> Engineer reaching for research</motion.p>
-            <motion.h1 custom={1.2} initial="hidden" animate="visible" variants={reveal} id="hero-title">Machine learning, markets,<br />and the systems between.</motion.h1>
-            <motion.div custom={1.5} initial="hidden" animate="visible" variants={reveal} className="hero-bottom">
+            <motion.p custom={0.15} initial="hidden" animate="visible" variants={reveal} className="hero-kicker">Rishabh Raj <span>/</span> Engineer reaching for research</motion.p>
+            <motion.h1 custom={0.3} initial="hidden" animate="visible" variants={reveal} id="hero-title">Machine learning, markets,<br />and the systems between.</motion.h1>
+            <motion.div custom={0.45} initial="hidden" animate="visible" variants={reveal} className="hero-bottom">
               <p>I turn research ideas into instruments that survive contact with data, hardware, and the real world.</p>
               <div className="hero-instrument">
                 <div className="hero-readout" aria-label="Ornstein-Uhlenbeck particle readout"><span><b>σ</b> {(0.184 * gloryIntensity).toFixed(3)}</span><span><b>t½</b> {(4.2 / descentSpeed).toFixed(2)}s</span><span><i /> MEAN REVERTING</span></div>
