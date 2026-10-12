@@ -115,8 +115,8 @@ export function BuildArtifact({ title }: { title: string }) {
   if (title === 'AgriProPlus') return (
     <div className="build-artifact transaction-artifact" aria-hidden="true"><span>SOIL + WEATHER</span><i /><span>MODEL</span><i /><b>CROP INFERENCE</b></div>
   );
-  if (title === 'TensorTonic') return (
-    <div className="build-artifact tensor-artifact" aria-hidden="true"><div>{[1, 0, 2, -1, 3, 1, 2, 1, 0].map((cell, index) => <i key={index}>{cell}</i>)}</div><span>×</span><b>VERIFIED LAYER</b></div>
+  if (title === 'GeoFolio') return (
+    <div className="build-artifact transaction-artifact" aria-hidden="true"><span>LIVE FEEDS</span><i /><span>C++ ANALYTICS</span><i /><b>SCENARIO CONTEXT</b><code>sources + assumptions</code></div>
   );
   return (
     <div className="build-artifact graph-artifact" aria-hidden="true"><svg viewBox="0 0 300 132"><path d="M32 96L91 37L151 82L211 28L270 66M91 37L211 28M151 82L270 66" /><circle cx="32" cy="96" r="7" /><circle cx="91" cy="37" r="7" /><circle cx="151" cy="82" r="7" /><circle cx="211" cy="28" r="7" /><circle cx="270" cy="66" r="7" /></svg><code>O(E log V)</code></div>

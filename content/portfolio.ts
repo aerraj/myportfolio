@@ -70,7 +70,7 @@ export const capabilities = [
 export const secondaryProjects = [
   { title: 'MediKart', note: 'Security-hardened MERN commerce with server-authoritative pricing and idempotent Stripe fulfillment.', lang: 'JavaScript', href: 'https://github.com/aerraj/MediKart' },
   { title: 'Pacman 4D', note: 'A deterministic browser experiment where spectral agents move through superposition, entanglement, and decoherence.', lang: 'TypeScript', href: 'https://github.com/aerraj/pacman4d' },
-  { title: 'TensorTonic', note: 'Verified, from-scratch machine-learning implementations with an emphasis on mathematical primitives.', lang: 'Python', href: 'https://github.com/aerraj/TensorTonic-Solutions' },
+  { title: 'GeoFolio', note: 'C++ and Python portfolio analytics with live Coinbase feeds, geographic stress scenarios, persistent team workspaces, and source-backed LLM context.', lang: 'C++ / Python', href: 'https://github.com/aerraj/geofolio-context' },
   { title: 'AgriProPlus', note: 'Serverless agricultural intelligence with crop inference, searchable public schemes, and protected administration.', lang: 'React / Node.js', href: 'https://github.com/aerraj/Agriproplus' }
 ];
 
