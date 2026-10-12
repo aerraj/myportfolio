@@ -38,22 +38,22 @@ function PortfolioEvidence() {
         {marketPoints.map(([x, y], index) => <circle key={`${x}-${y}`} className={selected.has(index) ? 'instrument selected' : 'instrument'} cx={x} cy={y} r={selected.has(index) ? 4 : 2.2} />)}
         <text x="42" y="24">E[r]</text><text x="445" y="202">σ</text>
       </svg>
-      <div className="portfolio-axis-note"><span>250+ instruments</span><span>$450M+ context</span><strong>7 selected</strong></div>
+      <div className="portfolio-axis-note"><span>36 EUR listings</span><span>≤ 100% gross</span><strong>≤ 5% net</strong></div>
     </div>
   );
 }
 
-function AgriEvidence() {
+function TradingEvidence() {
   return (
-    <div className="evidence-scene agri-evidence" role="img" aria-label="Weather, crop, soil, and public scheme inputs travel through a bounded decision tree with an explicit low-confidence fallback.">
+    <div className="evidence-scene agri-evidence" role="img" aria-label="ITCH market data travels through order books, strategy signals, risk checks, and OUCH encoding in a simulation engine.">
       <div className="topographic-field" aria-hidden="true" />
-      <div className="evidence-readout"><span>FIELD DECISION MAP</span><span>96 TREES</span></div>
-      <div className="agri-inputs"><span>WEATHER</span><span>SOIL</span><span>CROP</span><span>SCHEMES</span></div>
+      <div className="evidence-readout"><span>TICK-TO-TRADE PIPELINE</span><span>C++20</span></div>
+      <div className="agri-inputs"><span>ITCH</span><span>BOOK</span><span>SIGNAL</span><span>RISK</span></div>
       <div className="decision-tree" aria-hidden="true">
-        <i /><i /><i /><i /><b>BOUNDED INFERENCE</b>
+        <i /><i /><i /><i /><b>PENDING-EXPOSURE CHECK</b>
       </div>
-      <div className="recommendation-card"><small>RECOMMENDATION</small><strong>Route · verify · explain</strong><span>confidence 0.87</span></div>
-      <div className="edge-condition"><i /> LOW CONFIDENCE → API FALLBACK</div>
+      <div className="recommendation-card"><small>OUCH ENCODING</small><strong>Parse · check · simulate</strong><span>320 ns p50 · synthetic benchmark</span></div>
+      <div className="edge-condition"><i /> SIMULATION · NO LIVE EXCHANGE</div>
     </div>
   );
 }
@@ -61,7 +61,7 @@ function AgriEvidence() {
 export function ProjectEvidence({ project }: { project: 'A' | 'B' | 'C' }) {
   if (project === 'A') return <DwtEvidence />;
   if (project === 'B') return <PortfolioEvidence />;
-  return <AgriEvidence />;
+  return <TradingEvidence />;
 }
 
 export function SignalBlueprintTransition() {
@@ -111,6 +111,9 @@ export function BuildArtifact({ title }: { title: string }) {
   );
   if (title === 'Pacman 4D') return (
     <div className="build-artifact maze-artifact" aria-hidden="true"><i className="maze-wall a" /><i className="maze-wall b" /><i className="maze-wall c" /><span className="pac">●</span><span className="ghost one">◇</span><span className="ghost two">◇</span><code>ψ → decohere</code></div>
+  );
+  if (title === 'AgriProPlus') return (
+    <div className="build-artifact transaction-artifact" aria-hidden="true"><span>SOIL + WEATHER</span><i /><span>MODEL</span><i /><b>CROP INFERENCE</b></div>
   );
   if (title === 'TensorTonic') return (
     <div className="build-artifact tensor-artifact" aria-hidden="true"><div>{[1, 0, 2, -1, 3, 1, 2, 1, 0].map((cell, index) => <i key={index}>{cell}</i>)}</div><span>×</span><b>VERIFIED LAYER</b></div>

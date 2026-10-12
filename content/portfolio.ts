@@ -24,25 +24,25 @@ export const featuredProjects: FeaturedProject[] = [
   },
   {
     index: 'B',
-    title: 'Portfolio Intelligence',
+    title: 'PortOPT',
     track: 'Quant',
-    summary: 'A research pipeline for turning market structure into reviewable decisions.',
-    detail: 'At NorthRock Capital, I built resilient ingestion across 250+ instruments, a local-LLM research workflow, and a constrained, monthly-rebalanced QMI portfolio model for a $1M initial allocation.',
-    stack: ['Python', 'Portfolio Optimization', 'LLM', 'Cloud Data'],
-    href: 'https://drive.google.com/file/d/18TMykR5_hVBtPlYLGkcQ5kfXPdPvp8VW/view?usp=sharing',
-    cta: 'Read the documented work',
-    signal: '$450M+ AUM · 250+ instruments'
+    summary: 'Macro regimes become a reproducible, constrained equity portfolio.',
+    detail: 'A Euro-area long/short research pipeline across 36 EUR listings: delayed macro signals, walk-forward factor allocation, monthly optimization, transaction costs, tested exposure constraints, and an auditable PDF report. Historical backtests expose model limitations alongside results.',
+    stack: ['Python', 'SciPy', 'Portfolio Optimization', 'FRED / ECB'],
+    href: 'https://github.com/aerraj/PortOPT',
+    cta: 'Inspect the research pipeline',
+    signal: '36 listings · monthly rebalance'
   },
   {
     index: 'C',
-    title: 'AgriProPlus',
+    title: 'HFT Engine',
     track: 'Systems',
-    summary: 'Agricultural intelligence engineered for the messy edges of production.',
-    detail: 'A serverless React/Node platform with bounded crop inference, searchable public schemes, protected administration, Firebase routing, accessible states, and a 96-tree model embedded directly in the API runtime.',
-    stack: ['React', 'Node.js', 'MongoDB', 'Firebase', 'Python'],
-    href: 'https://github.com/aerraj/Agriproplus',
-    cta: 'Open the system',
-    signal: '96-tree inference · bounded APIs'
+    summary: 'From market-data bytes to risk-checked orders in C++20.',
+    detail: 'An ITCH-to-OUCH simulation engine with pooled FIFO order books, reference strategies, pending-exposure risk checks, deterministic replay, snapshot recovery, and asynchronous logging. Synthetic shared-runner benchmarks report 320 ns median tick-to-trade; this is a simulator, without live exchange connectivity.',
+    stack: ['C++20', 'ITCH / OUCH', 'CMake', 'GoogleTest'],
+    href: 'https://github.com/aerraj/hft-engine',
+    cta: 'Inspect the engine and benchmarks',
+    signal: '320 ns p50 · synthetic workload'
   }
 ];
 
@@ -71,7 +71,7 @@ export const secondaryProjects = [
   { title: 'MediKart', note: 'Security-hardened MERN commerce with server-authoritative pricing and idempotent Stripe fulfillment.', lang: 'JavaScript', href: 'https://github.com/aerraj/MediKart' },
   { title: 'Pacman 4D', note: 'A deterministic browser experiment where spectral agents move through superposition, entanglement, and decoherence.', lang: 'TypeScript', href: 'https://github.com/aerraj/pacman4d' },
   { title: 'TensorTonic', note: 'Verified, from-scratch machine-learning implementations with an emphasis on mathematical primitives.', lang: 'Python', href: 'https://github.com/aerraj/TensorTonic-Solutions' },
-  { title: 'CSES', note: 'A working archive of algorithmic problem solving in modern C++.', lang: 'C++', href: 'https://github.com/aerraj/CSES' }
+  { title: 'AgriProPlus', note: 'Serverless agricultural intelligence with crop inference, searchable public schemes, and protected administration.', lang: 'React / Node.js', href: 'https://github.com/aerraj/Agriproplus' }
 ];
 
 export const timeline = [
@@ -83,7 +83,7 @@ export const timeline = [
 
 export const proof = [
   { value: '869', label: 'LeetCode solved', href: 'https://leetcode.com/u/aerraj/' },
-  { value: '1551', label: 'Codeforces Specialist', href: 'https://codeforces.com/profile/aerraj' },
+  { value: '1621', label: 'Codeforces Expert', href: 'https://codeforces.com/profile/aerraj' },
   { value: '38', label: 'CodeChef global rank', href: 'https://www.codechef.com/users/ae_rraj' },
   { value: 'R2', label: 'Meta Hacker Cup 2024', href: 'https://www.facebook.com/codingcompetitions/hacker-cup/2024/certificate/1718845482222514' },
   { value: 'ICPC', label: 'Asia Kanpur Honorable', href: '/icpc-asia-kanpur-achievement.pdf' }
